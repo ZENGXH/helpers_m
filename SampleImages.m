@@ -6,7 +6,7 @@ labels_all = cell(num_vid, 1);
 for v = 1:num_vid
     path_imgs = fullfile(folder_img, names_vid{v});
     names_img = GetAllFilesInCurFolder(path_imgs, suffix_img, false);
-    ids_chosen = round(linspace(1, length(names_img), num_img_chosen));
+    ids_chosen = round(linspace(0, length(names_img)-1, num_img_chosen));
     names_all{v} = fullfile(names_vid{v}, strcat(strread(num2str(ids_chosen),'%s'), suffix_img));
     labels_all{v} = repmat(labels(v), num_img_chosen, 1);
 end
