@@ -3,7 +3,7 @@ if nargin < 1
     num_pool = Inf;
 end
 
-num_pool = min(num_pool, maxNumCompThreads);
+num_pool = min(num_pool, feature('numcores') * 2);
 
 if matlabpool('size')<=0
     if verLessThan('matlab', '8.3.0')
