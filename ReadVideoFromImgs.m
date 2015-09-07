@@ -1,22 +1,18 @@
-function frames = ReadVideoFromImgs(folder_img, suffix_img)
+function [frames, names_img] = ReadVideoFromImgs(path_images, suffix)
 
-num_frame = CountFilesInCurFolder(folder_img, suffix_img);
-if 0 == num_frame
-   error('no files with suffix %s are found', suffix_img);
+files = dir(fullfile(path_images, strcat('*', suffix)));
+names_img = {files.name};
+frameNum = length(names_img);
+if frameNum < 1
+   warning('No *%s files are found in %s\n', suffix, path_images);
+   frames = [];
+   return;
 end
 
-[img, colmp] = imread(fullfile(folder_img, sprintf('%d%s', 0, suffix_img)));
-frames = zeros([size(img, 1), size(img, 2), size(img, 3), num_frame], 'uint8');
+img = imread(fullfile(path_images, names_img{1}));
+frames = zeros([size(img), frameNum], 'uint8');
+frames(:,:,:,1) = img;
 
-if isempty(colmp) %rgb image
-    frames(:,:,:,1) = img;
-    for n = 2:num_frame
-        frames(:,:,:,n) = imread(fullfile(folder_img, sprintf('%d%s', n-1, suffix_img))) ;
-    end
-else %label image
-    frames(:,:,:,1) = uint8(255*ind2rgb(img, colmp ));
-    for n = 2:num_frame
-        [img, colmp] = imread(fullfile(folder_img, sprintf('%d%s', n-1, suffix_img)));
-        frames(:,:,:,n) = uint8(255*ind2rgb(img, colmp ));
-    end
+for n = 2:frameNum
+    frames(:,:,:,n) = imread(fullfile(path_images, names_img{n}));
 end
