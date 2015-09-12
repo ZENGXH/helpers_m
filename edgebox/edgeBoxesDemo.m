@@ -1,5 +1,5 @@
 % Demo for Edge Boxes (please see readme.txt first).
-
+addpath(genpath('../toolbox_piotr/'))
 %% load pre-trained edge detection model and set opts (see edgesDemo.m)
 model=load('models/forest/modelBsds'); model=model.model;
 model.opts.multiscale=0; model.opts.sharpen=2; model.opts.nThreads=4;

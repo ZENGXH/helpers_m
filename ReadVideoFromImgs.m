@@ -10,7 +10,7 @@ if frameNum < 1
 end
 
 img = imread(fullfile(path_images, names_img{1}));
-frames = zeros([size(img), frameNum], 'uint8');
+frames = zeros([size(img, 1), size(img, 2), size(img, 3), frameNum], 'uint8');
 frames(:,:,:,1) = img;
 
 for n = 2:frameNum
