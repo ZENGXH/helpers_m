@@ -1,13 +1,15 @@
 clear,clc
-addpath('..\');
-addpath(genpath('..\toolbox_piotr\'));
-dataset = 'JHMDB';
+addpath('../');
+addpath(genpath('../toolbox_piotr'));
+addpath('private')
+% dataset = 'JHMDB';
 % root_vid = fullfile('F:\Datasets', strcat(dataset, '_img'));
-root_vid = 'F:\Data\smap\JHMDB_flow_lc_sigma_2_maxMag_15_clip1.0';
-suffix_img = '.png';
+root_vid = '/data1/data/visual_flow/ucf101_flow_tvl1_340_256';
+suffix_img = '_vis.png';
 % root_edge = fullfile('F:\Data\edges_structure', dataset); CheckOutputPath(root_edge);
-root_edge = fullfile('F:\Data\edges_structure', 'JHMDB_flow_lc_sigma_2_maxMag_15_clip1.0'); CheckOutputPath(root_edge);
+root_edge = '/data1/data/edge_structure/ucf101_flow_tvl1_340_256'; CheckOutputPath(root_edge);
 videos = GetSubFolders(root_vid);
+% videos = videos(1:130:end);
 
 %load edge model
 model=load('models/forest/modelBsds'); model=model.model;
@@ -20,26 +22,20 @@ if matlabpool('size') <= 0
     matlabpool
 end
 parfor v = 1:length(videos)
-    path_vid = fullfile(root_vid, videos{v});
-    [frames, names_img] = ReadVideoFromImgs(path_vid, suffix_img);
-    [height, width, chn, num] = size(frames);
-    if chn == 1
-        frames = reshape(frames, [], size(frames, 4));        
-        frames = repmat(frames, [3, 1]);
-        frames = reshape(frames, height, width, 3, num);
-    end
+    folder_vid = fullfile(root_vid, videos{v});    
+    folder_edge = fullfile(root_edge, videos{v});
+    if ~exist(folder_edge, 'dir'), mkdir(folder_edge), end;
     
-    path_edge = fullfile(root_edge, videos{v});
-    mkdir(path_edge);
-    
-    for f = 1:size(frames, 4)
-        [E,O]=edgesDetect(frames(:,:,:,f),model);
+    num_frame = CountFilesInCurFolder(folder_vid, suffix_img);
+    for f = 1:num_frame
+        img = imread(fullfile(folder_vid, sprintf('%d%s', f-1, suffix_img)));        
+        [E,O]=edgesDetect(img, model);
         E=edgesNmsMex(E,O,2,0,1,model.opts.nThreads);
 %         SaveVarList(fullfile(path_edge, ...
 %             strcat(names_img{f}(1:end-length(suffix_img)), '.mat')), {E; O}, {'E'; 'O'});
-        path_E = fullfile(path_edge, strcat(names_img{f}(1:end-length(suffix_img)), '_E.bin'));
-        Save2DFloat_bin(E, path_E);
-        path_O = fullfile(path_edge, strcat(names_img{f}(1:end-length(suffix_img)), '_O.bin'));
-        Save2DFloat_bin(O, path_O);
+        path_E = fullfile(folder_edge, sprintf('%d_E.bin', f-1));
+        SaveNDFloat_bin(E, path_E, false);
+        path_O = fullfile(folder_edge, sprintf('%d_O.bin', f-1));
+        SaveNDFloat_bin(O, path_O, false);
     end
 end
