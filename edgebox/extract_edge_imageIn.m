@@ -1,13 +1,13 @@
 clear,clc
 addpath('../');
 addpath(genpath('../toolbox_piotr'));
-addpath('private')
+% addpath('private')
 % dataset = 'JHMDB';
 % root_vid = fullfile('F:\Datasets', strcat(dataset, '_img'));
-root_vid = '/data1/data/visual_flow/ucf101_flow_tvl1_340_256';
-suffix_img = '_vis.png';
+root_vid = '/data1/data/hmdb51_flow_tvl1';
+suffix_img = '_vis.jpg';
 % root_edge = fullfile('F:\Data\edges_structure', dataset); CheckOutputPath(root_edge);
-root_edge = '/data1/data/edge_structure/ucf101_flow_tvl1_340_256'; CheckOutputPath(root_edge);
+root_edge = '/data1/data/edge_structure/hmdb51_tvl1'; CheckOutputPath(root_edge);
 videos = GetSubFolders(root_vid);
 % videos = videos(1:130:end);
 
@@ -31,11 +31,17 @@ parfor v = 1:length(videos)
         img = imread(fullfile(folder_vid, sprintf('%d%s', f-1, suffix_img)));        
         [E,O]=edgesDetect(img, model);
         E=edgesNmsMex(E,O,2,0,1,model.opts.nThreads);
+        
+        path_E = fullfile(folder_edge, sprintf('%d_E.png', f-1));
+        FloatMat2Img(E, 0, 1, path_E);
+        path_O = fullfile(folder_edge, sprintf('%d_O.png', f-1));
+        FloatMat2Img(O, 0, pi, path_O);
+        
 %         SaveVarList(fullfile(path_edge, ...
 %             strcat(names_img{f}(1:end-length(suffix_img)), '.mat')), {E; O}, {'E'; 'O'});
-        path_E = fullfile(folder_edge, sprintf('%d_E.bin', f-1));
-        SaveNDFloat_bin(E, path_E, false);
-        path_O = fullfile(folder_edge, sprintf('%d_O.bin', f-1));
-        SaveNDFloat_bin(O, path_O, false);
+%         path_E = fullfile(folder_edge, sprintf('%d_E.bin', f-1));
+%         SaveNDFloat_bin(E, path_E, false);
+%         path_O = fullfile(folder_edge, sprintf('%d_O.bin', f-1));
+%         SaveNDFloat_bin(O, path_O, false);
     end
 end

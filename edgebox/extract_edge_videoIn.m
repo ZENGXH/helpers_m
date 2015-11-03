@@ -1,7 +1,7 @@
 clear,clc
 addpath('..\');
 addpath(genpath('..\toolbox_piotr\'));
-dataset = 'JHMDB';
+dataset = 'ucf101';
 root_vid = fullfile('F:\Datasets', dataset);
 suffix_vid = '.avi';
 root_edge = fullfile('F:\Data\edges_structure', dataset); CheckOutputPath(root_edge);
