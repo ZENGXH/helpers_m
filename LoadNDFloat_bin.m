@@ -11,7 +11,6 @@ if length(siz) == 1
     siz = [1, siz];
 end
 
-% siz = siz(end:-1:1); %original order: num, chn, height, width
 mat = reshape(mat, reshape(siz, 1, []));
 mat = squeeze(mat);
 if do_wh_permute
@@ -19,3 +18,4 @@ if do_wh_permute
     order(1:2) = [2,1];
     mat = permute(mat, order);
 end
+
